@@ -1,4 +1,4 @@
- /******************************************************************************
+/******************************************************************************
  *
  * Module: Dio
  *
@@ -147,12 +147,12 @@ typedef uint8 Dio_PortLevelType;
 /* Structure for Dio_ChannelGroup */
 typedef struct
 {
-  /* Mask which defines the positions of the channel group */
-  uint8 mask;
-  /* Position of the group from LSB */
-  uint8 offset;
-  /* This shall be the port ID which the Channel group is defined. */
-  Dio_PortType PortIndex;
+    /* Mask which defines the positions of the channel group */
+    uint8 mask;
+    /* Position of the group from LSB */
+    uint8 offset;
+    /* This shall be the port ID which the Channel group is defined. */
+    Dio_PortType PortIndex;
 } Dio_ChannelGroupType;
 
 typedef struct
@@ -161,7 +161,7 @@ typedef struct
     Dio_PortType Port_Num;
     /* Member contains the ID of the Channel*/
     Dio_ChannelType Ch_Num;
-}Dio_ConfigChannel;
+} Dio_ConfigChannel;
 
 /* Data Structure required for initializing the Dio Driver */
 typedef struct Dio_ConfigType
@@ -185,8 +185,14 @@ Dio_LevelType Dio_ReadChannel(Dio_ChannelType ChannelId);
 /* Function for DIO write Port API */
 void Dio_WriteChannel(Dio_ChannelType ChannelId, Dio_LevelType Level);
 
+/* Function for DIO read Channel Group API */
+Dio_PortLevelType Dio_ReadChannelGroup(const Dio_ChannelGroupType *ChannelGroupIdPtr);
+
+/* Function for DIO write Channel Group API */
+void Dio_WriteChannelGroup(const Dio_ChannelGroupType *ChannelGroupIdPtr, Dio_PortLevelType Level);
+
 /* Function for DIO Initialization API */
-void Dio_Init(const Dio_ConfigType * ConfigPtr);
+void Dio_Init(const Dio_ConfigType *ConfigPtr);
 
 #if (DIO_FLIP_CHANNEL_API == STD_ON)
 /* Function for DIO flip channel API */
