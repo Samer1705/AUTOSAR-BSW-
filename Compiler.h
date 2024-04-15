@@ -15,8 +15,8 @@
 #define COMPILER_H
 
 /* Id for the company in the AUTOSAR
- * for example Mohamed Tarek's ID = 1000 :) */
-#define COMPILER_VENDOR_ID                                  (1000U)
+ * Random Vendor ID */
+#define COMPILER_VENDOR_ID                                  (1705U)
 
 /*
  * Module Version 1.0.0

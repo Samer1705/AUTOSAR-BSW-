@@ -13,8 +13,8 @@
 #define DIO_H
 
 /* Id for the company in the AUTOSAR
- * for example Mohamed Tarek's ID = 1000 :) */
-#define DIO_VENDOR_ID    (1000U)
+ * Random Vendor ID */
+#define DIO_VENDOR_ID    (1705U)
 
 /* Dio Module Id */
 #define DIO_MODULE_ID    (120U)
