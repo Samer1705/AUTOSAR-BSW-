@@ -49,7 +49,7 @@ typedef struct
     uint8 sw_major_version;
     uint8 sw_minor_version;
     uint8 sw_patch_version;
-} Std_VersionInfoType
+} Std_VersionInfoType;
 
 #ifndef STATUSTYPEDEFINED
 #define STATUSTYPEDEFINED
