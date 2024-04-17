@@ -12,6 +12,7 @@ C_SRCS += \
 ../Det.c \
 ../Dio.c \
 ../Dio_PBcfg.c \
+../Port_PBcfg.c \
 ../main.c \
 ../tm4c123gh6pm_startup_ccs.c 
 
@@ -19,6 +20,7 @@ C_DEPS += \
 ./Det.d \
 ./Dio.d \
 ./Dio_PBcfg.d \
+./Port_PBcfg.d \
 ./main.d \
 ./tm4c123gh6pm_startup_ccs.d 
 
@@ -26,6 +28,7 @@ OBJS += \
 ./Det.obj \
 ./Dio.obj \
 ./Dio_PBcfg.obj \
+./Port_PBcfg.obj \
 ./main.obj \
 ./tm4c123gh6pm_startup_ccs.obj 
 
@@ -33,6 +36,7 @@ OBJS__QUOTED += \
 "Det.obj" \
 "Dio.obj" \
 "Dio_PBcfg.obj" \
+"Port_PBcfg.obj" \
 "main.obj" \
 "tm4c123gh6pm_startup_ccs.obj" 
 
@@ -40,6 +44,7 @@ C_DEPS__QUOTED += \
 "Det.d" \
 "Dio.d" \
 "Dio_PBcfg.d" \
+"Port_PBcfg.d" \
 "main.d" \
 "tm4c123gh6pm_startup_ccs.d" 
 
@@ -47,6 +52,7 @@ C_SRCS__QUOTED += \
 "../Det.c" \
 "../Dio.c" \
 "../Dio_PBcfg.c" \
+"../Port_PBcfg.c" \
 "../main.c" \
 "../tm4c123gh6pm_startup_ccs.c" 
 

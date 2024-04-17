@@ -13,6 +13,7 @@ ORDERED_OBJS += \
 "./Det.obj" \
 "./Dio.obj" \
 "./Dio_PBcfg.obj" \
+"./Port_PBcfg.obj" \
 "./main.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "../tm4c123gh6pm.cmd" \
@@ -145,8 +146,8 @@ AUTOSAR_Final.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Det.obj" "Dio.obj" "Dio_PBcfg.obj" "main.obj" "tm4c123gh6pm_startup_ccs.obj" 
-	-$(RM) "Det.d" "Dio.d" "Dio_PBcfg.d" "main.d" "tm4c123gh6pm_startup_ccs.d" 
+	-$(RM) "Det.obj" "Dio.obj" "Dio_PBcfg.obj" "Port_PBcfg.obj" "main.obj" "tm4c123gh6pm_startup_ccs.obj" 
+	-$(RM) "Det.d" "Dio.d" "Dio_PBcfg.d" "Port_PBcfg.d" "main.d" "tm4c123gh6pm_startup_ccs.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
