@@ -1,29 +1,32 @@
 ******************************************************************************
                   TI ARM Linker PC v20.2.7                     
 ******************************************************************************
->> Linked Thu Apr 18 17:38:03 2024
+>> Linked Thu Apr 18 17:54:17 2024
 
 OUTPUT FILE NAME:   <AUTOSAR_Final.out>
-ENTRY POINT SYMBOL: "_c_int00_noinit_noargs"  address: 0000026d
+ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 00000ffd
 
 
 MEMORY CONFIGURATION
 
          name            origin    length      used     unused   attr    fill
 ----------------------  --------  ---------  --------  --------  ----  --------
-  FLASH                 00000000   00040000  000002b0  0003fd50  R  X
-  SRAM                  20000000   00008000  00000200  00007e00  RW X
+  FLASH                 00000000   00040000  000011a6  0003ee5a  R  X
+  SRAM                  20000000   00008000  00000211  00007def  RW X
 
 
 SEGMENT ALLOCATION MAP
 
 run origin  load origin   length   init length attrs members
 ----------  ----------- ---------- ----------- ----- -------
-00000000    00000000    000002b0   000002b0    r-x
+00000000    00000000    000011a8   000011a8    r-x
   00000000    00000000    0000026c   0000026c    r-- .intvecs
-  0000026c    0000026c    00000044   00000044    r-x .text
-20000000    20000000    00000200   00000000    rw-
+  0000026c    0000026c    00000e26   00000e26    r-x .text
+  00001094    00001094    000000f4   000000f4    r-- .const
+  00001188    00001188    00000020   00000020    r-- .cinit
+20000000    20000000    00000211   00000000    rw-
   20000000    20000000    00000200   00000000    rw- .stack
+  20000200    20000200    00000011   00000000    rw- .data
 
 
 SECTION ALLOCATION MAP
@@ -34,17 +37,48 @@ section   page    origin      length       input sections
 .intvecs   0    00000000    0000026c     
                   00000000    0000026c     tm4c123gh6pm_startup_ccs.obj (.intvecs)
 
-.text      0    0000026c    00000044     
-                  0000026c    0000002c     rtsv7M4_T_le_v4SPD16_eabi.lib : boot_cortex_m.c.obj (.text:_c_int00_noinit_noargs:_c_int00_noinit_noargs)
-                  00000298    0000000c     tm4c123gh6pm_startup_ccs.obj (.text)
-                  000002a4    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : pre_init.c.obj (.text:_system_pre_init)
-                  000002a8    00000004                                   : exit.c.obj (.text:abort:abort)
-                  000002ac    00000004     main.obj (.text)
+.text      0    0000026c    00000e26     
+                  0000026c    00000700     Port.obj (.text)
+                  0000096c    0000030c     Dio.obj (.text)
+                  00000c78    000000a8     Os.obj (.text)
+                  00000d20    0000009c     rtsv7M4_T_le_v4SPD16_eabi.lib : memcpy_t2.asm.obj (.text)
+                  00000dbc    0000007c     Button.obj (.text)
+                  00000e38    0000007c     Gpt.obj (.text)
+                  00000eb4    00000068     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
+                  00000f1c    0000005c     App.obj (.text)
+                  00000f78    00000044     rtsv7M4_T_le_v4SPD16_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit:__TI_auto_init_nobinit_nopinit)
+                  00000fbc    0000003e     Led.obj (.text)
+                  00000ffa    00000002     --HOLE-- [fill = 0]
+                  00000ffc    00000034     rtsv7M4_T_le_v4SPD16_eabi.lib : boot_cortex_m.c.obj (.text:_c_int00_noargs:_c_int00_noargs)
+                  00001030    00000020     Mcu.obj (.text)
+                  00001050    00000016     Det.obj (.text)
+                  00001066    0000000e     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
+                  00001074    0000000c     tm4c123gh6pm_startup_ccs.obj (.text)
+                  00001080    0000000a     main.obj (.text)
+                  0000108a    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : pre_init.c.obj (.text:_system_pre_init)
+                  0000108e    00000004                                   : exit.c.obj (.text:abort:abort)
 
-.cinit     0    00000000    00000000     UNINITIALIZED
+.const     0    00001094    000000f4     
+                  00001094    000000c0     Port_PBcfg.obj (.const:Port_pinConfigurationSet)
+                  00001154    00000030     Port_PBcfg.obj (.const:Port_Configuration)
+                  00001184    00000004     Dio_PBcfg.obj (.const:Dio_Configuration)
+
+.cinit     0    00001188    00000020     
+                  00001188    0000000e     (.cinit..data.load) [load image, compression = lzss]
+                  00001196    00000002     --HOLE-- [fill = 0]
+                  00001198    00000008     (__TI_handler_table)
+                  000011a0    00000008     (__TI_cinit_table)
 
 .init_array 
 *          0    00000000    00000000     UNINITIALIZED
+
+.data      0    20000200    00000011     UNINITIALIZED
+                  20000200    00000005     Dio.obj (.data)
+                  20000205    00000003     Button.obj (.data)
+                  20000208    00000004     Gpt.obj (.data)
+                  2000020c    00000002     App.obj (.data)
+                  2000020e    00000002     Os.obj (.data)
+                  20000210    00000001     Port.obj (.data)
 
 .stack     0    20000000    00000200     UNINITIALIZED
                   20000000    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : boot_cortex_m.c.obj (.stack)
@@ -58,74 +92,189 @@ MODULE SUMMARY
        Module                         code   ro data   rw data
        ------                         ----   -------   -------
     .\
+       Port.obj                       1792   0         1      
+       Dio.obj                        780    0         5      
        tm4c123gh6pm_startup_ccs.obj   12     620       0      
-       main.obj                       4      0         0      
+       Port_PBcfg.obj                 0      240       0      
+       Os.obj                         168    0         2      
+       Gpt.obj                        124    0         4      
+       Button.obj                     124    0         3      
+       App.obj                        92     0         2      
+       Led.obj                        62     0         0      
+       Mcu.obj                        32     0         0      
+       Det.obj                        22     0         0      
+       main.obj                       10     0         0      
+       Dio_PBcfg.obj                  0      4         0      
     +--+------------------------------+------+---------+---------+
-       Total:                         16     620       0      
+       Total:                         3218   864       17     
                                                               
     D:\Career\IDE\ccs\tools\compiler\ti-cgt-arm_20.2.7.LTS\lib\rtsv7M4_T_le_v4SPD16_eabi.lib
-       boot_cortex_m.c.obj            44     0         0      
+       memcpy_t2.asm.obj              156    0         0      
+       copy_decompress_lzss.c.obj     104    0         0      
+       autoinit.c.obj                 68     0         0      
+       boot_cortex_m.c.obj            52     0         0      
+       copy_decompress_none.c.obj     14     0         0      
        exit.c.obj                     4      0         0      
        pre_init.c.obj                 4      0         0      
     +--+------------------------------+------+---------+---------+
-       Total:                         52     0         0      
+       Total:                         402    0         0      
                                                               
        Stack:                         0      0         512    
+       Linker Generated:              0      30        0      
     +--+------------------------------+------+---------+---------+
-       Grand Total:                   68     620       512    
+       Grand Total:                   3620   894       529    
+
+
+LINKER GENERATED COPY TABLES
+
+__TI_cinit_table @ 000011a0 records: 1, size/record: 8, table size: 8
+	.data: load addr=00001188, load size=0000000e bytes, run addr=20000200, run size=00000011 bytes, compression=lzss
+
+
+LINKER GENERATED HANDLER TABLE
+
+__TI_handler_table @ 00001198 records: 2, size/record: 4, table size: 8
+	index: 0, handler: __TI_decompress_lzss
+	index: 1, handler: __TI_decompress_none
 
 
 GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
 
-address   name                   
--------   ----                   
-000002a9  C$$EXIT                
-00000299  ResetISR               
-20000200  __STACK_END            
-00000200  __STACK_SIZE           
-20000200  __STACK_TOP            
-ffffffff  __TI_pprof_out_hndl    
-ffffffff  __TI_prof_data_size    
-ffffffff  __TI_prof_data_start   
-00000000  __TI_static_base__     
-ffffffff  __binit__              
-ffffffff  __c_args__             
-UNDEFED   __mpu_init             
-20000000  __stack                
-20000000  __start___llvm_prf_cnts
-20000000  __stop___llvm_prf_cnts 
-0000026d  _c_int00_noinit_noargs 
-000002a5  _system_pre_init       
-000002a9  abort                  
-ffffffff  binit                  
-00000000  g_pfnVectors           
-000002ad  main                   
+address   name                          
+-------   ----                          
+00000f41  App_Task                      
+00000dbd  Button_GetState               
+00000dc3  Button_RefreshState           
+00000f31  Button_Task                   
+0000108f  C$$EXIT                       
+00001051  Det_ReportError               
+00001184  Dio_Configuration             
+00000b4b  Dio_FlipChannel               
+0000096d  Dio_Init                      
+00000a71  Dio_ReadChannel               
+00000991  Dio_WriteChannel              
+00000f1d  Init_Task                     
+00000fd5  Led_RefreshOutput             
+00000fc9  Led_SetOff                    
+00000fbd  Led_SetOn                     
+00000f39  Led_Task                      
+00000fed  Led_Toggle                    
+00001031  Mcu_Init                      
+00000c93  Os_NewTimerTick               
+00000ca3  Os_Scheduler                  
+00000c79  Os_start                      
+00001154  Port_Configuration            
+000008ff  Port_GetVersionInfo           
+000002e3  Port_Init                     
+000006ad  Port_RefreshPortDirection     
+000005c1  Port_SetPinDirection          
+0000076f  Port_SetPinMode               
+00001094  Port_pinConfigurationSet      
+00001075  ResetISR                      
+00000e39  SysTick_Handler               
+00000e91  SysTick_SetCallBack           
+00000e49  SysTick_Start                 
+00000e89  SysTick_Stop                  
+20000200  __STACK_END                   
+00000200  __STACK_SIZE                  
+20000200  __STACK_TOP                   
+000011a0  __TI_CINIT_Base               
+000011a8  __TI_CINIT_Limit              
+00001198  __TI_Handler_Table_Base       
+000011a0  __TI_Handler_Table_Limit      
+00000f79  __TI_auto_init_nobinit_nopinit
+00000eb5  __TI_decompress_lzss          
+00001067  __TI_decompress_none          
+ffffffff  __TI_pprof_out_hndl           
+ffffffff  __TI_prof_data_size           
+ffffffff  __TI_prof_data_start          
+00000000  __TI_static_base__            
+00000d21  __aeabi_memcpy                
+00000d21  __aeabi_memcpy4               
+00000d21  __aeabi_memcpy8               
+ffffffff  __binit__                     
+ffffffff  __c_args__                    
+UNDEFED   __mpu_init                    
+20000000  __stack                       
+20000000  __start___llvm_prf_cnts       
+20000000  __stop___llvm_prf_cnts        
+00000ffd  _c_int00_noargs               
+UNDEFED   _system_post_cinit            
+0000108b  _system_pre_init              
+0000108f  abort                         
+ffffffff  binit                         
+00000000  g_pfnVectors                  
+00001081  main                          
+00000d21  memcpy                        
 
 
 GLOBAL SYMBOLS: SORTED BY Symbol Address 
 
-address   name                   
--------   ----                   
-00000000  __TI_static_base__     
-00000000  g_pfnVectors           
-00000200  __STACK_SIZE           
-0000026d  _c_int00_noinit_noargs 
-00000299  ResetISR               
-000002a5  _system_pre_init       
-000002a9  C$$EXIT                
-000002a9  abort                  
-000002ad  main                   
-20000000  __stack                
-20000000  __start___llvm_prf_cnts
-20000000  __stop___llvm_prf_cnts 
-20000200  __STACK_END            
-20000200  __STACK_TOP            
-ffffffff  __TI_pprof_out_hndl    
-ffffffff  __TI_prof_data_size    
-ffffffff  __TI_prof_data_start   
-ffffffff  __binit__              
-ffffffff  __c_args__             
-ffffffff  binit                  
-UNDEFED   __mpu_init             
+address   name                          
+-------   ----                          
+00000000  __TI_static_base__            
+00000000  g_pfnVectors                  
+00000200  __STACK_SIZE                  
+000002e3  Port_Init                     
+000005c1  Port_SetPinDirection          
+000006ad  Port_RefreshPortDirection     
+0000076f  Port_SetPinMode               
+000008ff  Port_GetVersionInfo           
+0000096d  Dio_Init                      
+00000991  Dio_WriteChannel              
+00000a71  Dio_ReadChannel               
+00000b4b  Dio_FlipChannel               
+00000c79  Os_start                      
+00000c93  Os_NewTimerTick               
+00000ca3  Os_Scheduler                  
+00000d21  __aeabi_memcpy                
+00000d21  __aeabi_memcpy4               
+00000d21  __aeabi_memcpy8               
+00000d21  memcpy                        
+00000dbd  Button_GetState               
+00000dc3  Button_RefreshState           
+00000e39  SysTick_Handler               
+00000e49  SysTick_Start                 
+00000e89  SysTick_Stop                  
+00000e91  SysTick_SetCallBack           
+00000eb5  __TI_decompress_lzss          
+00000f1d  Init_Task                     
+00000f31  Button_Task                   
+00000f39  Led_Task                      
+00000f41  App_Task                      
+00000f79  __TI_auto_init_nobinit_nopinit
+00000fbd  Led_SetOn                     
+00000fc9  Led_SetOff                    
+00000fd5  Led_RefreshOutput             
+00000fed  Led_Toggle                    
+00000ffd  _c_int00_noargs               
+00001031  Mcu_Init                      
+00001051  Det_ReportError               
+00001067  __TI_decompress_none          
+00001075  ResetISR                      
+00001081  main                          
+0000108b  _system_pre_init              
+0000108f  C$$EXIT                       
+0000108f  abort                         
+00001094  Port_pinConfigurationSet      
+00001154  Port_Configuration            
+00001184  Dio_Configuration             
+00001198  __TI_Handler_Table_Base       
+000011a0  __TI_CINIT_Base               
+000011a0  __TI_Handler_Table_Limit      
+000011a8  __TI_CINIT_Limit              
+20000000  __stack                       
+20000000  __start___llvm_prf_cnts       
+20000000  __stop___llvm_prf_cnts        
+20000200  __STACK_END                   
+20000200  __STACK_TOP                   
+ffffffff  __TI_pprof_out_hndl           
+ffffffff  __TI_prof_data_size           
+ffffffff  __TI_prof_data_start          
+ffffffff  __binit__                     
+ffffffff  __c_args__                    
+ffffffff  binit                         
+UNDEFED   __mpu_init                    
+UNDEFED   _system_post_cinit            
 
-[21 symbols]
+[64 symbols]
