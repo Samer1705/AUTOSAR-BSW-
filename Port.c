@@ -79,8 +79,7 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
     /* check if the input configuration pointer is not a NULL_PTR */
     if (NULL_PTR == ConfigPtr)
     {
-        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_INIT_SID,
-        PORT_E_PARAM_CONFIG);
+        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_INIT_SID, PORT_E_PARAM_CONFIG);
     }
     else
     {
@@ -92,8 +91,7 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
     /* Change Port Status to Initialized */
     Port_Status = PORT_INITIALIZED;
     uint8 Port_Pin_Index;
-    for (Port_Pin_Index = 0; Port_Pin_Index < PORT_ALL_PINS_NUMBER;
-            Port_Pin_Index++)
+    for (Port_Pin_Index = 0; Port_Pin_Index < PORT_ALL_PINS_NUMBER; Port_Pin_Index++)
     {
         /* If the config ptr is NULL, do nothing */
         if (Port_pinConfigurationSet.Pins[Port_Pin_Index] == NULL_PTR)
@@ -108,8 +106,7 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
             uint8 PortId = getPortId(Port_Pin_Index);
 
             /* get the configuration struct for this specific Port-Pin */
-            Port_ConfigPin PinConfig =
-                    *Port_pinConfigurationSet.Pins[Port_Pin_Index];
+            Port_ConfigPin PinConfig = *Port_pinConfigurationSet.Pins[Port_Pin_Index];
 
             /* get the Port registed of the selected Pin */
             volatile uint32 *PortGpio_Ptr = getPortBasePtr(Port_Pin_Index);
@@ -118,15 +115,12 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
             SYSCTL_REGCGC2_REG |= (1 << PortId);
 
             /* If the Pin is Locked, Unlock it (PD7 or PF0) */
-            if (((PortId == 3) && (PinId == 7))
-                    || ((PortId == 5) && (PinId == 0)))
+            if (((PortId == 3) && (PinId == 7)) || ((PortId == 5) && (PinId == 0)))
             {
                 /* Unlock the GPIOCR register */
-                *(volatile uint32*) ((volatile uint8*) PortGpio_Ptr
-                        + PORT_LOCK_REG_OFFSET) = 0x4C4F434B;
+                *(volatile uint32*) ((volatile uint8*) PortGpio_Ptr + PORT_LOCK_REG_OFFSET) = 0x4C4F434B;
                 /* Set the corresponding bit in GPIOCR register to allow changes on this pin */
-                SET_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_COMMIT_REG_OFFSET),
-                        PinId);
+                SET_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_COMMIT_REG_OFFSET), PinId);
             }
             else
             {
@@ -134,29 +128,26 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
             }
             if (PinConfig.mode == PORT_DIO_MODE)
             {
-                CLEAR_BIT(
-                        *(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_ANALOG_MODE_SEL_REG_OFFSET),
-                        PinId); /* Clear the corresponding bit in the GPIOAMSEL register to disable analog functionality on this pin */
-                CLEAR_BIT(
-                        *(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_ALT_FUNC_REG_OFFSET),
-                        PinId); /* Disable Alternative function for this pin by clear the corresponding bit in GPIOAFSEL register */
-                *(volatile uint32*) ((volatile uint8*) PortGpio_Ptr
-                        + PORT_CTL_REG_OFFSET) &= ~(0x0000000F << (PinId * 4)); /* Clear the PMCx bits for this pin */
+                /* Clear the corresponding bit in the GPIOAMSEL register to disable analog functionality on this pin */
+                CLEAR_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_ANALOG_MODE_SEL_REG_OFFSET), PinId);
+                /* Disable Alternative function for this pin by clear the corresponding bit in GPIOAFSEL register */
+                CLEAR_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_ALT_FUNC_REG_OFFSET), PinId);
+                /* Clear the PMCx bits for this pin */
+                *(volatile uint32*) ((volatile uint8*) PortGpio_Ptr + PORT_CTL_REG_OFFSET) &= ~(0x0000000F << (PinId * 4));
                 if (PinConfig.direction == PORT_PIN_OUT)
                 {
-                    SET_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DIR_REG_OFFSET),
-                            PinId); /* Set the corresponding bit in the GPIODIR register to configure it as output pin */
+                    /* Set the corresponding bit in the GPIODIR register to configure it as output pin */
+                    SET_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DIR_REG_OFFSET), PinId);
 
                     if (PinConfig.initial_value == STD_HIGH)
                     {
-                        SET_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DATA_REG_OFFSET),
-                                PinId); /* Set the corresponding bit in the GPIODATA register to provide initial value 1 */
+                        /* Set the corresponding bit in the GPIODATA register to provide initial value 1 */
+                        SET_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DATA_REG_OFFSET), PinId);
                     }
                     else
                     {
-                        CLEAR_BIT(
-                                *(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DATA_REG_OFFSET),
-                                PinId); /* Clear the corresponding bit in the GPIODATA register to provide initial value 0 */
+                        /* Clear the corresponding bit in the GPIODATA register to provide initial value 0 */
+                        CLEAR_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DATA_REG_OFFSET), PinId);
                     }
                 }
                 else if (PinConfig.direction == PORT_PIN_IN)
@@ -228,7 +219,7 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
                         + PORT_CTL_REG_OFFSET) &= ~(0x0000000F << (PinId * 4)); /* Clear the PMCx bits for this pin */
                 *(volatile uint32*) ((volatile uint8*) PortGpio_Ptr
                         + PORT_CTL_REG_OFFSET) |=
-                        (PinConfig.mode << (PinId * 4)); /* Set the PMCx bits for this pin to the selected Alternate function in the configurations */
+                                (PinConfig.mode << (PinId * 4)); /* Set the PMCx bits for this pin to the selected Alternate function in the configurations */
                 SET_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DIGITAL_ENABLE_REG_OFFSET),
                         PinId); /* Set the corresponding bit in the GPIODEN register to enable digital functionality on this pin */
             }
@@ -239,4 +230,79 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
         }
     }
 }
+
+#if (PORT_SET_PIN_DIRECTION_API == STD_ON)
+/************************************************************************************
+ * Service Name: Port_SetPinDirection
+ * Service ID[hex]: 0x01
+ * Sync/Async: Synchronous
+ * Reentrancy: reentrant
+ * Parameters (in): Pin - Port Pin ID number,
+ *                  Direction - Port Pin Direction
+ * Parameters (inout): None
+ * Parameters (out): None
+ * Return value: None
+ * Description: Sets the port pin direction
+ ************************************************************************************/
+void Port_SetPinDirection(Port_PinType Pin, Port_PinDirectionType Direction)
+{
+    boolean error = FALSE;
+#if (PORT_DEV_ERROR_DETECT == STD_ON)
+    /* check if the Port driver initialized or Not */
+    if (Port_Status != PORT_INITIALIZED)
+    {
+        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_DIRECTION_SID, PORT_E_UNINIT);
+        error = TRUE;
+    }
+    else
+    {
+        /* No Action Required */
+    }
+    /* check if the pin direction is changeable */
+    if (PinConfig.direction_change == STD_OFF)
+    {
+        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_DIRECTION_SID, PORT_E_DIRECTION_UNCHANGEABLE);
+        error = TRUE;
+    }
+    else
+    {
+        /* No Action Required */
+    }
+    /* check that this pin is available to be configured, or even EXIST! */
+    if(Port_pinConfigurationSet.Pins[Pin] == NULL_PTR)
+    {
+        /* Report to DET  */
+        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_DIRECTION_SID, PORT_E_PARAM_PIN);
+        error = TRUE;
+    }
+    else
+    {
+        /* No action Required */
+    }
+#endif
+    /* get the pin number (PinId) and the Port number (PortId) */
+    uint8 PinId = getPinId(Pin);
+    uint8 PortId = getPortId(Pin);
+
+    /* get the configuration struct for this specific Port-Pin */
+    Port_ConfigPin PinConfig = *Port_pinConfigurationSet.Pins[Pin];
+
+    /* get the Port registed of the selected Pin */
+    volatile uint32 * PortGpio_Ptr = getPortBasePtr(Pin);
+
+    if(error == FALSE)
+    {
+        if(Direction == PORT_PIN_IN)
+        {
+            CLEAR_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DIR_REG_OFFSET) , PinId);                /* Clear the corresponding bit in the GPIODIR register to configure it as input pin */
+
+        }
+        else if(Direction == PORT_PIN_OUT)
+        {
+            SET_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DIR_REG_OFFSET) , PinId);                /* Set the corresponding bit in the GPIODIR register to configure it as output pin */
+
+        }
+    }
+}
+#endif
 
