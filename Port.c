@@ -75,6 +75,7 @@ static uint8 getPinId(Port_PinType PortPinId)
  ************************************************************************************/
 void Port_Init(const Port_ConfigType *ConfigPtr)
 {
+    uint8 Port_Pin_Index;
 #if (DIO_DEV_ERROR_DETECT == STD_ON)
     /* check if the input configuration pointer is not a NULL_PTR */
     if (NULL_PTR == ConfigPtr)
@@ -90,7 +91,6 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
 
     /* Change Port Status to Initialized */
     Port_Status = PORT_INITIALIZED;
-    uint8 Port_Pin_Index;
     for (Port_Pin_Index = 0; Port_Pin_Index < PORT_ALL_PINS_NUMBER; Port_Pin_Index++)
     {
         /* If the config ptr is NULL, do nothing */
@@ -247,6 +247,13 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
 void Port_SetPinDirection(Port_PinType Pin, Port_PinDirectionType Direction)
 {
     boolean error = FALSE;
+    /* get the pin number (PinId) and the Port number (PortId) */
+    uint8 PinId = getPinId(Pin);
+    uint8 PortId = getPortId(Pin);
+
+    /* get the Port registed of the selected Pin */
+    volatile uint32 * PortGpio_Ptr = getPortBasePtr(Pin);
+
     /* get the configuration struct for this specific Port-Pin */
     Port_ConfigPin PinConfig = *Port_pinConfigurationSet.Pins[Pin];
 
@@ -283,12 +290,6 @@ void Port_SetPinDirection(Port_PinType Pin, Port_PinDirectionType Direction)
         /* No action Required */
     }
 #endif
-    /* get the pin number (PinId) and the Port number (PortId) */
-    uint8 PinId = getPinId(Pin);
-    uint8 PortId = getPortId(Pin);
-
-    /* get the Port registed of the selected Pin */
-    volatile uint32 * PortGpio_Ptr = getPortBasePtr(Pin);
 
     if(error == FALSE)
     {
@@ -319,6 +320,7 @@ void Port_SetPinDirection(Port_PinType Pin, Port_PinDirectionType Direction)
  ************************************************************************************/
 void Port_RefreshPortDirection( void )
 {
+    Port_PinType Pin;
 #if (PORT_DEV_ERROR_DETECT == STD_ON)
 
     /* check if the Port driver initialized or Not */
@@ -333,7 +335,6 @@ void Port_RefreshPortDirection( void )
 
 #endif /* (PORT_DEV_ERROR_DETECT == STD_ON) */
 
-    Port_PinType Pin;
     for(Pin = 0; Pin < PORT_ALL_PINS_NUMBER; Pin++)
     {
         /* if the configuration ptr is Null, head On to next Port-Pin Index */
