@@ -111,8 +111,8 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
             /* get the Port registed of the selected Pin */
             volatile uint32 *PortGpio_Ptr = getPortBasePtr(Port_Pin_Index);
 
-            /* Enable clock for PORT and allow time for clock to start*/
-            SYSCTL_REGCGC2_REG |= (1 << PortId);
+            //            /* Enable clock for PORT and allow time for clock to start*/
+            //            SYSCTL_REGCGC2_REG |= (1 << PortId);
 
             /* If the Pin is Locked, Unlock it (PD7 or PF0) */
             if (((PortId == 3) && (PinId == 7)) || ((PortId == 5) && (PinId == 0)))
@@ -247,6 +247,9 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
 void Port_SetPinDirection(Port_PinType Pin, Port_PinDirectionType Direction)
 {
     boolean error = FALSE;
+    /* get the configuration struct for this specific Port-Pin */
+    Port_ConfigPin PinConfig = *Port_pinConfigurationSet.Pins[Pin];
+
 #if (PORT_DEV_ERROR_DETECT == STD_ON)
     /* check if the Port driver initialized or Not */
     if (Port_Status != PORT_INITIALIZED)
@@ -284,9 +287,6 @@ void Port_SetPinDirection(Port_PinType Pin, Port_PinDirectionType Direction)
     uint8 PinId = getPinId(Pin);
     uint8 PortId = getPortId(Pin);
 
-    /* get the configuration struct for this specific Port-Pin */
-    Port_ConfigPin PinConfig = *Port_pinConfigurationSet.Pins[Pin];
-
     /* get the Port registed of the selected Pin */
     volatile uint32 * PortGpio_Ptr = getPortBasePtr(Pin);
 
@@ -306,3 +306,238 @@ void Port_SetPinDirection(Port_PinType Pin, Port_PinDirectionType Direction)
 }
 #endif
 
+/************************************************************************************
+ * Service Name: Port_RefreshPortDirection
+ * Service ID[hex]: 0x02
+ * Sync/Async: Synchronous
+ * Reentrancy: Non reentrant
+ * Parameters (in): None
+ * Parameters (inout): None
+ * Parameters (out): None
+ * Return value: None
+ * Description: Refreshes port direction.
+ ************************************************************************************/
+void Port_RefreshPortDirection( void )
+{
+#if (PORT_DEV_ERROR_DETECT == STD_ON)
+
+    /* check if the Port driver initialized or Not */
+    if(Port_Status != PORT_INITIALIZED)
+    {
+        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_REFRESH_PORT_DIRECTION_SID, PORT_E_UNINIT);
+    }
+    else
+    {
+        /* No Action Required */
+    }
+
+#endif /* (PORT_DEV_ERROR_DETECT == STD_ON) */
+
+    Port_PinType Pin;
+    for(Pin = 0; Pin < PORT_ALL_PINS_NUMBER; Pin++)
+    {
+        /* if the configuration ptr is Null, head On to next Port-Pin Index */
+        if(Port_pinConfigurationSet.Pins[Pin] == NULL_PTR)
+        {
+            /* No Action Required */
+        }
+        /* if the configuration ptr is set to specific config, refresh the Pin direction */
+        else
+        {
+            /* get the pin number (PinId) and the Port number (PortId) */
+            uint8 PinId = getPinId(Pin);
+            uint8 PortId = getPortId(Pin);
+
+            /* get the configuration struct for this specific Port-Pin */
+            Port_ConfigPin PinConfig = *Port_pinConfigurationSet.Pins[Pin];
+
+            /* get the Port registed of the selected Pin */
+            volatile uint32 * PortGpio_Ptr = getPortBasePtr(Pin);
+
+            if(PinConfig.direction_change == STD_ON)
+            {
+                if(PinConfig.direction == PORT_PIN_IN)
+                {
+                    CLEAR_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DIR_REG_OFFSET) , PinId);                /* Clear the corresponding bit in the GPIODIR register to configure it as input pin */
+
+                }
+                else if(PinConfig.direction == PORT_PIN_OUT)
+                {
+                    SET_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DIR_REG_OFFSET) , PinId);                /* Set the corresponding bit in the GPIODIR register to configure it as output pin */
+
+                }
+                else
+                {
+                    /* No Action Required */
+                }
+            }
+            else
+            {
+                /* No Action Required */
+            }
+        }
+    }
+}
+
+/************************************************************************************
+ * Service Name: Port_SetPinMode
+ * Service ID[hex]: 0x04
+ * Sync/Async: Synchronous
+ * Reentrancy: reentrant
+ * Parameters (in): Pin - Port Pin ID number,
+                   Mode - New Port Pin mode to be set on port pin
+ * Parameters (inout): None
+ * Parameters (out): None
+ * Return value: None
+ * Description: Sets the port pin mode.
+ ************************************************************************************/
+void Port_SetPinMode( Port_PinType Pin, Port_PinModeType Mode )
+{
+    boolean error = FALSE;
+
+    /* get the configuration struct for this specific Port-Pin */
+    Port_ConfigPin PinConfig = *Port_pinConfigurationSet.Pins[Pin];
+
+#if (PORT_DEV_ERROR_DETECT == STD_ON)
+
+    /* check if the Port driver initialized or Not */
+    if(Port_Status != PORT_INITIALIZED)
+    {
+        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_MODE_SID, PORT_E_UNINIT);
+        error = TRUE;
+    }
+    else
+    {
+        /* No Action Required */
+    }
+
+    /* check if the pin mode is changeable */
+    if(PinConfig.mode_change == STD_OFF)
+    {
+        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_MODE_SID, PORT_E_MODE_UNCHANGEABLE);
+        error = TRUE;
+    }
+    else
+    {
+        /* No Action Required */
+    }
+
+    /* check that this pin is available to be configured, or even EXIST! */
+    if(Port_pinConfigurationSet.Pins[Pin] == NULL_PTR)
+    {
+        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_MODE_SID, PORT_E_PARAM_PIN);
+        error = TRUE;
+    }
+    else
+    {
+        /* No Action Required */
+    }
+
+    /* check if the mode passed is a valid mode */
+    if(PinConfig.mode > PORT_ANALOG_MODE)
+    {
+        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_MODE_SID, PORT_E_PARAM_INVALID_MODE);
+        error = TRUE;
+    }
+    else
+    {
+        /* No Action Required */
+    }
+
+#endif /* (PORT_DEV_ERROR_DETECT == STD_ON) */
+
+    if(error == FALSE)
+    {
+        /* get the pin number (PinId) and the Port number (PortId) */
+        uint8 PinId = getPinId(Pin);
+        uint8 PortId = getPortId(Pin);
+
+        /* get the Port registed of the selected Pin */
+        volatile uint32 * PortGpio_Ptr = getPortBasePtr(Pin);
+
+        if(Mode == PORT_DIO_MODE)
+        {
+            CLEAR_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_ANALOG_MODE_SEL_REG_OFFSET) , PinId);         /* Clear the corresponding bit in the GPIOAMSEL register to disable analog functionality on this pin */
+            CLEAR_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_ALT_FUNC_REG_OFFSET) , PinId);                /* Disable Alternative function for this pin by clear the corresponding bit in GPIOAFSEL register */
+            *(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_CTL_REG_OFFSET) &= ~(0x0000000F << (PinId * 4));        /* Clear the PMCx bits for this pin */
+        }
+        else if(Mode == PORT_ANALOG_MODE)
+        {
+            CLEAR_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_DIGITAL_ENABLE_REG_OFFSET) , PinId);        /* Clear the corresponding bit in the GPIODEN register to disable digital functionality on this pin */
+            SET_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_ANALOG_MODE_SEL_REG_OFFSET) , PinId);     /* Set the corresponding bit in the GPIOAMSEL register to enable analog functionality on this pin */
+        }
+        else
+        {
+            CLEAR_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_ANALOG_MODE_SEL_REG_OFFSET) , PinId);          /* Clear the corresponding bit in the GPIOAMSEL register to disable analog functionality on this pin */
+            SET_BIT(*(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_ALT_FUNC_REG_OFFSET) , PinId);                   /* enable Alternative function for this pin by Setting the corresponding bit in GPIOAFSEL register */
+            *(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_CTL_REG_OFFSET) &= ~(0x0000000F << (PinId * 4));         /* Clear the PMCx bits for this pin */
+            *(volatile uint32 *)((volatile uint8 *)PortGpio_Ptr + PORT_CTL_REG_OFFSET) |= (PinConfig.mode << (PinId * 4));      /* Set the PMCx bits for this pin to the selected Alternate function in the configurations */
+        }
+    }
+    else
+    {
+        /* No Action Required */
+    }
+}
+
+/************************************************************************************
+ * Service Name: Port_GetVersionInfo
+ * Service ID[hex]: 0x03
+ * Sync/Async: Synchronous
+ * Reentrancy: Non reentrant
+ * Parameters (in): None
+ * Parameters (inout): None
+ * Parameters (out): versioninfo - Pointer to where to store the version information of this module
+ * Return value: None
+ * Description: Returns the version information of this module.
+ ************************************************************************************/
+#if (PORT_VERSION_INFO_API == STD_ON)
+void Port_GetVersionInfo( Std_VersionInfoType* versioninfo )
+{
+    boolean error = FALSE;
+
+#if (PORT_DEV_ERROR_DETECT == STD_ON)
+
+    /* Check if input pointer is not Null pointer */
+    if(NULL_PTR == versioninfo)
+    {
+        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_GET_VERSION_INFO_SID, PORT_E_PARAM_POINTER);
+        error = TRUE;
+    }
+    else
+    {
+        /* No Action Required */
+    }
+
+    /* check if the Port driver initialized or Not */
+    if(Port_Status != PORT_INITIALIZED)
+    {
+        Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_GET_VERSION_INFO_SID, PORT_E_UNINIT);
+        error = TRUE;
+    }
+    else
+    {
+        /* No Action Required */
+    }
+
+#endif /* (PORT_DEV_ERROR_DETECT == STD_ON) */
+
+    if(error == FALSE)
+    {
+        /* Copy the vendor Id */
+        versioninfo->vendorID = (uint16)PORT_VENDOR_ID;
+        /* Copy the module Id */
+        versioninfo->moduleID = (uint16)PORT_MODULE_ID;
+        /* Copy Software Major Version */
+        versioninfo->sw_major_version = (uint8)PORT_SW_MAJOR_VERSION;
+        /* Copy Software Minor Version */
+        versioninfo->sw_minor_version = (uint8)PORT_SW_MINOR_VERSION;
+        /* Copy Software Patch Version */
+        versioninfo->sw_patch_version = (uint8)PORT_SW_PATCH_VERSION;
+    }
+    else
+    {
+        /* No Action Required */
+    }
+}
+#endif

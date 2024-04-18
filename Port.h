@@ -259,4 +259,11 @@ void Port_SetPinMode(Port_PinType Pin, Port_PinModeType Mode);
 void Port_GetVersionInfo( Std_VersionInfoType* versioninfo );
 #endif
 
+/*******************************************************************************
+ *                       External Variables                                    *
+ *******************************************************************************/
+
+/* Extern PB structures to be used by Port and other modules */
+extern const Port_ConfigType Port_pinConfigurationSet;
+
 #endif /* PORT_H_ */
